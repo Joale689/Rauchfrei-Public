@@ -1,0 +1,228 @@
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="theme-color" content="#163d37">
+
+  <meta name="description" content="Zigaretten und Dampfen lokal erfassen. Ohne Konto, mit deinem eigenen Tagesrhythmus.">
+
+  <link rel="manifest" href="./manifest.webmanifest">
+
+  <link rel="icon" href="./icons/icon-192.png">
+
+  <link rel="stylesheet" href="./style.css">
+
+  <title>Rauchfrei · Dein Überblick</title>
+
+<style>
+      #profileForm textarea {
+        display:block;width:100%;box-sizing:border-box;
+        font:inherit;line-height:1.5;padding:12px;
+        border:1px solid #adbfaf;border-radius:10px;
+        background:white;color:#153e36;resize:vertical;
+      }
+      #profileForm .stats {
+        display:grid;grid-template-columns:1fr 1fr;gap:14px;
+      }
+    </style>
+
+<style>
+.cost-grid {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:16px;margin:20px 0;
+}
+.cost-grid > div {
+  background:#eef3e7;border-radius:12px;padding:16px;
+}
+.cost-grid span {display:block;font-size:12px;color:#5d7068}
+.cost-grid strong {
+  display:block;font-size:28px;margin-top:7px;
+  overflow-wrap:anywhere;
+}
+.chart-row {
+  display:grid;grid-template-columns:120px 1fr;
+  gap:12px;padding:12px 0;border-top:1px solid #dce3d8;
+  align-items:center;
+}
+.chart-label {font-size:12px;line-height:1.5}
+.chart-track {
+  height:16px;background:#edf1e8;border-radius:5px;overflow:hidden;
+}
+.chart-fill {height:100%;background:#547d56}
+.chart-fill.unconfirmed {
+  background:repeating-linear-gradient(
+    135deg,#9faf98 0,#9faf98 5px,#d2dccb 5px,#d2dccb 10px
+  );
+}
+.chart-value {font-size:12px;margin-top:5px;line-height:1.5}
+@media(max-width:540px) {
+  .chart-row {grid-template-columns:92px 1fr}
+  .cost-grid {gap:8px}
+  .cost-grid > div {padding:12px}
+  .cost-grid strong {font-size:23px}
+}
+</style>
+
+</head>
+
+<body>
+
+  <main>
+
+    <header><a class="brand" href="./">rauchfrei<span>Ein Schritt nach dem anderen.</span></a><span class="badge">Testversion 0.2.1</span></header>
+
+    <p class="privacy">Lokal auf diesem Gerät · ohne Konto</p>
+
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+
+    <section id="blocked" class="card" hidden><h1>Deine Daten bleiben erhalten.</h1><p id="blockedText"></p><button id="rawExport">Gespeicherten Stand herunterladen</button></section>
+
+    <section id="setup" class="card" hidden>
+
+      <p class="eyebrow">DEIN START</p><h1>Erst einmal festhalten,<br>wo du gerade stehst.</h1>
+
+      <p>Zigaretten und Dampfen bleiben getrennt. Du brauchst kein Konto. Diese erste Testversion erfasst deinen Verlauf; ein Reduktionsplan folgt später.</p>
+
+      <label for="boundary">Wann beginnt dein Tag normalerweise?</label>
+
+      <select id="boundary"></select><p class="hint">Der Tag wechselt automatisch. Bei wechselnden Schlafzeiten kannst du einen neuen Tag auch selbst beginnen, ohne eine Zigarette zu erfassen.</p>
+
+      <button id="begin" class="primary">Lokal beginnen</button>
+
+    </section>
+
+    <div id="tracker" hidden>
+
+      <section class="card">
+        <p class="eyebrow">DEIN PERSÖNLICHER WEG</p>
+        <h2>Was möchtest du verändern?</h2>
+        <p class="hint">Deine Angaben bleiben auf diesem Gerät.
+        Sie legen noch kein automatisches Tageslimit fest.</p>
+
+        <form id="profileForm">
+          <label for="profileMode">Dein Einstieg</label>
+          <select id="profileMode">
+            <option value="observe">Zunächst meinen Konsum verstehen</option>
+            <option value="reduce">Schrittweise reduzieren</option>
+            <option value="quit-date">Zu einem festen Datum aufhören</option>
+            <option value="smoke-free">Ich bin bereits rauchfrei</option>
+          </select>
+
+          <label for="profileDate">Datum deines Rauchstopps, falls festgelegt</label>
+          <input id="profileDate" type="date">
+          <p class="hint">Wenn du bereits rauchfrei bist: dein bisheriges Rauchstoppdatum.</p>
+
+          <label for="profileReasons">Wofür möchtest du rauchfrei werden?</label>
+          <textarea id="profileReasons" rows="4" maxlength="2000"
+            placeholder="Deine eigenen Gründe und Wünsche"></textarea>
+
+          <label for="profileTriggers">Wann greifst du besonders oft zur Zigarette?</label>
+          <textarea id="profileTriggers" rows="3" maxlength="1000"
+            placeholder="Situationen, Gefühle oder Gewohnheiten"></textarea>
+
+          <label for="profileAids">Welche Unterstützung nutzt du?</label>
+          <textarea id="profileAids" rows="2" maxlength="500"
+            placeholder="Zum Beispiel Beratung oder Hilfsmittel; freiwillige Angabe"></textarea>
+
+          <div class="stats">
+            <div>
+              <label for="profilePrice">Packungspreis in Euro</label>
+              <input id="profilePrice" type="number" min="0.01"
+                max="1000" step="0.01" inputmode="decimal">
+            </div>
+            <div>
+              <label for="profileSize">Zigaretten je Packung</label>
+              <input id="profileSize" type="number" min="1"
+                max="1000" step="1" inputmode="numeric">
+            </div>
+          </div>
+
+          <p class="hint">Alle Angaben außer der Auswahl des Einstiegs sind freiwillig.
+          Preisangaben bereiten die spätere Kostenübersicht vor.</p>
+          <button class="primary" type="submit">Profil speichern</button>
+          <p id="profileStatus" class="hint" role="status"></p>
+        </form>
+      </section>
+
+
+      <section class="hero card">
+
+        <p class="eyebrow">DEIN AKTUELLER TAG</p><h1>Jeder Eintrag zählt.</h1><p id="period" class="muted"></p>
+
+        <div class="counters"><div><strong id="cigCount">0</strong><span>Zigaretten erfasst</span></div><div><strong id="vapeCount">0</strong><span>Dampfer-Einträge</span></div></div>
+
+        <div class="actions"><button id="cigBtn" class="primary">+ Zigarette</button><button id="vapeBtn" class="secondary">+ Dampfer</button></div>
+
+        <button id="undoBtn" class="text-button">Letzten Eintrag rückgängig</button>
+
+        <p id="dayHint" class="hint"></p>
+
+      </section>
+
+      
+<section class="card">
+  <p class="eyebrow">DEIN ÜBERBLICK</p>
+  <h2>Verlauf und Zigarettenkosten</h2>
+  <div class="cost-grid">
+    <div>
+      <span>Aktueller Rauchtag</span>
+      <strong id="currentCost">–</strong>
+    </div>
+    <div>
+      <span>Alle erfassten Zigaretten</span>
+      <strong id="totalCost">–</strong>
+    </div>
+  </div>
+  <p id="costExplanation" class="hint"></p>
+  <h3>Deine letzten 14 Rauchtage</h3>
+  <p class="hint">
+    Die Balken zeigen erfasste Zigaretten; Dampfer-Einträge stehen separat.
+    Schraffiert bedeutet: Die Vollständigkeit ist noch nicht bestätigt.
+    Tageslängen können bei manuellem Tagesbeginn voneinander abweichen.
+  </p>
+  <div id="consumptionChart" role="list"
+       aria-label="Verlauf der erfassten Zigaretten"></div>
+</section>
+
+<section class="card rhythm"><div><p class="eyebrow">DEIN RHYTHMUS</p><h2>Seit der letzten Zigarette</h2><strong id="sinceLast" class="elapsed">–</strong><p id="rhythmText" class="hint"></p></div><div><button id="startDayBtn" class="secondary">Neuen Tag jetzt beginnen</button><p class="hint">Optional nach dem Schlaf. Danach wechselt dein Tag automatisch täglich um diese Uhrzeit.</p></div></section>
+
+      <section class="card"><div class="section-heading"><div><p class="eyebrow">SCHRITT FÜR SCHRITT</p><h2>Deine letzten Tage</h2></div><span>max. 14</span></div>
+
+        <p class="hint">Ein leerer Tag ist noch kein nachgewiesener rauchfreier Tag. Bestätige abgeschlossene Tage nur, wenn du alles erfasst hast. Bestätigungen lassen sich zurücknehmen.</p><div id="history"></div>
+
+      </section>
+
+      <section class="card"><h2>Einträge dieses Tages</h2><p class="hint">Zum Korrigieren die Uhrzeit eines Eintrags ändern. Auf Wunsch kannst du ihn einzeln entfernen.</p><ul id="events"></ul></section>
+
+      <section class="card"><p class="eyebrow">DEINE DATEN</p><h2>Ein Backup gehört dazu.</h2><p class="hint">Die Daten liegen nur in diesem Browser. Beim Löschen von Website-Daten oder Verlust des Geräts können sie verloren gehen. Sichere sie regelmäßig als Datei.</p>
+
+        <div class="actions"><button id="exportBtn" class="secondary">Backup herunterladen</button><button id="importBtn" class="secondary">Backup importieren</button></div>
+
+        <button id="recoveryBtn" class="text-button" hidden>Sicherung vor letztem Import herunterladen</button>
+
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+
+      </section>
+
+    </div>
+
+    <footer><span id="offline">Offline-Nutzung wird vorbereitet.</span><p>Entwicklungsstand · keine automatische Empfehlung zur Reduktion</p></footer>
+
+  </main>
+
+  <dialog id="importDialog"><form method="dialog"><h2>Backup übernehmen?</h2><p id="importSummary"></p><p>Der aktuelle Stand wird ersetzt. Eine lokale Sicherung wird vorher angelegt. Lade zusätzlich ein eigenes Backup herunter.</p><button id="dialogExport" type="button" class="secondary">Aktuellen Stand herunterladen</button><div class="actions"><button value="cancel" class="secondary">Abbrechen</button><button value="accept" class="primary">Import übernehmen</button></div></form></dialog>
+
+  <dialog id="editDialog"><form method="dialog"><h2>Eintrag korrigieren</h2><label for="editTime">Datum und Uhrzeit</label><input id="editTime" type="datetime-local" required><p class="hint">Änderungen heben die Vollständigkeitsbestätigung der betroffenen Tage auf.</p><div class="actions"><button value="cancel" class="secondary" formnovalidate>Abbrechen</button><button value="accept" class="primary">Speichern</button></div></form></dialog>
+
+  <script type="module" src="./src/app.js"></script>
+
+</body>
+
+</html>
+

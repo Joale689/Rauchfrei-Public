@@ -1,0 +1,9 @@
+{
+  "name": "rauchfrei-public",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/core.test.mjs tests/service-worker.test.mjs tests/time-edit.test.mjs tests/profile.test.mjs tests/costs.test.mjs"
+  }
+}
